@@ -1,9 +1,5 @@
 class GithubClient
 
-  def self.conn
-    Faraday.new('https://api.github.com')
-  end
-
   def self.repo_info
     response = conn.get('/repos/jacobyarborough/little-esty-shop')
     parse(response)
@@ -19,7 +15,8 @@ class GithubClient
     parse(response)
   end
 
-  def self.parse(response)
-    JSON.parse(response.body, symbolize_names: true)
+  def get_url(url)
+    response = Faraday.get("https://api.github.com#{url}")
+    JSON.parse(response.body, symbolize_names:true)
   end
 end
