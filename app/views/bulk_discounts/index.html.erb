@@ -10,4 +10,6 @@
       Percentage: <%= number_to_percentage(discount.percentage, precision: 0) %><hr>
     </div>
   <% end %>
+
+  <%= link_to "Create Discount", new_merchant_bulk_discount_path(@merchant)%>
 </div>
