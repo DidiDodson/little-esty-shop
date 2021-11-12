@@ -3,10 +3,7 @@ class NagerService
   def self.us_holidays
      content = conn.get('/2022/US')
      body = parse_response(content)
-
-     body.each do |holiday|
-       holiday[:name]
-    end
+     body[:name]
   end
 
    def self.parse_response(response)
