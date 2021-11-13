@@ -57,4 +57,8 @@ RSpec.describe 'merchant invoice show page' do
       expect(find_field(:invoice_item_status).value).to eq('packaged')
     end
   end
+
+  it 'I see total revenue after discounts for all of my items on invoice' do
+    expect(page).to have_content("Total Merchant Revenue After Discounts for this Invoice")
+  end
 end

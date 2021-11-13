@@ -23,3 +23,5 @@ Customer: <%= @invoice.customer.full_name %><br>
 
 <h3>Total Merchant Revenue for this Invoice</h3>
   <%= number_to_currency(@invoice.total_item_revenue_by_merchant(@merchant.id).fdiv(100)) %>
+<h3>Total Merchant Revenue After Discounts for this Invoice</h3>
+  <%= number_to_currency((@invoice.total_item_revenue_by_merchant(@merchant.id).fdiv(100))- (@invoice.total_discounts(@invoice.id, @merchant.id).fdiv(1000))) %>

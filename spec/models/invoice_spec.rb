@@ -18,6 +18,8 @@ RSpec.describe Invoice, type: :model do
       @merchant = create(:merchant)
       @merchant2 = create(:merchant)
 
+      discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+
       @customer1 = create :customer
       @customer2 = create :customer
       @customer3 = create :customer
@@ -37,12 +39,16 @@ RSpec.describe Invoice, type: :model do
       @invoice5 = create :invoice, { customer_id: @customer5.id, status: 'cancelled' }
       @invoice6 = create :invoice, { customer_id: @customer6.id, status: 'completed' }
 
+      @invoice7 = create :invoice, { customer_id: @customer6.id, status: 'in progress' }
+
       @transaction1 = create :transaction, { invoice_id: @invoice1.id, result: 'success' }
       @transaction2 = create :transaction, { invoice_id: @invoice2.id, result: 'success' }
       @transaction3 = create :transaction, { invoice_id: @invoice3.id, result: 'success' }
       @transaction4 = create :transaction, { invoice_id: @invoice4.id, result: 'success' }
       @transaction5 = create :transaction, { invoice_id: @invoice5.id, result: 'success' }
       @transaction6 = create :transaction, { invoice_id: @invoice6.id, result: 'failed' }
+
+      @transaction7 = create :transaction, { invoice_id: @invoice7.id, result: 'success' }
 
       @inv_item1 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, unit_price: 100, quantity: 1 }
       @inv_item2 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice2.id}
@@ -54,14 +60,18 @@ RSpec.describe Invoice, type: :model do
       @inv_item8 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, unit_price: 100, quantity: 3 }
       @inv_item9 = create :invoice_item, { item_id: @item4.id, invoice_id: @invoice1.id, unit_price: 100, quantity: 1 }
 
+      @inv_item10 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice7.id, unit_price: 100, quantity: 6 }
+      @inv_item11 = create :invoice_item, { item_id: @item2.id, invoice_id: @invoice7.id, unit_price: 100, quantity: 10 }
+      @inv_item12 = create :invoice_item, { item_id: @item3.id, invoice_id: @invoice7.id, unit_price: 100, quantity: 1 }
+
     end
 
     it 'returns invoices where status is in progress' do
-      expect(Invoice.in_progress).to eq([@invoice1, @invoice2, @invoice3, @invoice4])
+      expect(Invoice.in_progress).to eq([@invoice1, @invoice2, @invoice3, @invoice4, @invoice7])
     end
 
     it 'orders invoices from oldest to newest' do
-      expect(Invoice.order_from_oldest).to eq([@invoice6, @invoice5, @invoice4, @invoice3, @invoice2, @invoice1])
+      expect(Invoice.order_from_oldest).to eq([@invoice7, @invoice6, @invoice5, @invoice4, @invoice3, @invoice2, @invoice1])
     end
 
     describe "#total_revenue" do
@@ -71,6 +81,11 @@ RSpec.describe Invoice, type: :model do
 
       it 'caluclates total revenue for an invoice' do
         expect(@invoice1.total_invoice_revenue(@invoice1.id)).to eq(600)
+      end
+
+      it 'caluclates total discounts applied to an invoice' do
+
+        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq(24000)
       end
     end
   end
