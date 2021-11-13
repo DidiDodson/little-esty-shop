@@ -25,7 +25,6 @@ class BulkDiscountsController < ApplicationController
   def destroy
     merchant = Merchant.find(params[:merchant_id])
     bulk_discount = merchant.bulk_discounts.find(params[:id])
-    # require "pry"; binding.pry
     bulk_discount.destroy
     redirect_to merchant_bulk_discounts_path(merchant)
   end
