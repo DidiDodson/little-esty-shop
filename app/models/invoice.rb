@@ -32,8 +32,6 @@ class Invoice < ApplicationRecord
                 .where(invoice_items: {invoice_id: invoice_id})
                 .where(items: {merchant_id: merchant_id})
                 .where('invoice_items.quantity >= bulk_discounts.quantity_threshold')
-                .sum("(invoice_items.unit_price * bulk_discounts.percentage) * invoice_items.quantity")
+                .sum("(invoice_items.unit_price * bulk_discounts.percentage)")
   end
-
-
 end
