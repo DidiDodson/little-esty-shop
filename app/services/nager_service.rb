@@ -1,16 +1,22 @@
+require 'faraday'
+require 'json'
+
 class NagerService
 
   def self.us_holidays
-     content = conn.get('/api/v3/NextPublicHolidays/US')
-     body = parse_response(content)
-     body[:name]
+     response = conn.get('/NextPublicHolidays/US')
+     body = parse_response(response)
+
   end
 
-   def self.parse_response(response)
-     JSON.parse(response.body, symbolize_names: true)
-   end
+  private
 
-   def self.conn
-     Faraday.new(url: "https://date.nager.at")
-   end
+  def self.parse_response(response)
+    # require "pry"; binding.pry
+     JSON.parse(response.to_json, symbolize_names: true)
+  end
+
+  def self.conn
+     Faraday.new(url: "https://date.nager.at/api/v3")
+  end
 end

@@ -23,9 +23,10 @@ end
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.before(:each) do
-    allow(GithubService).to receive(:name_info).and_return('little-esty-shop-mocked')
-    allow(GithubService).to receive(:contributors_commits).and_return(['user1 with 10 commits.', 'user2 with 20 commits.', 'user3 with 30 commits.'])
-    allow(GithubService).to receive(:pr_count).and_return(12)
+    allow(NagerService).to receive(:us_holidays).and_return('Thanksgiving mock', 'Christmas mock', 'New Years mock')
+    # allow(GithubService).to receive(:name_info).and_return('little-esty-shop-mocked')
+    # allow(GithubService).to receive(:contributors_commits).and_return(['user1 with 10 commits.', 'user2 with 20 commits.', 'user3 with 30 commits.'])
+    # allow(GithubService).to receive(:pr_count).and_return(12)
   end
   #   stub_request(:get, /api.github.com/).
   #     with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
