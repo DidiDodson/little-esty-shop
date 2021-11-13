@@ -1,0 +1,3 @@
+<h2><%= "Bulk Discount #{@bulk_discount.id}" %></h2>
+Quantity Threshold: <%="#{@bulk_discount.quantity_threshold}" %><br>
+Percentage: <%= number_to_percentage("#{@bulk_discount.percentage}", precision: 0) %>
