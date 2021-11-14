@@ -23,4 +23,12 @@ class InvoiceItem < ApplicationRecord
       .limit(1)
       .first
   end
+
+  def inv_discount_applied
+    bulk_discounts
+      .where('quantity_threshold <= ?', quantity)
+      .order(percentage: :desc)
+      .limit(1)
+      .first
+  end
 end

@@ -83,8 +83,12 @@ RSpec.describe Invoice, type: :model do
         expect(@invoice1.total_invoice_revenue(@invoice1.id)).to eq(600)
       end
 
-      it 'caluclates total discounts applied to an invoice' do
+      it 'caluclates total discounts applied to a merchant invoice' do
         expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq(4000)
+      end
+
+      it 'caluclates total discounts applied to an invoice' do
+        expect(@invoice7.total_inv_discounts(@invoice7.id)).to eq(4000)
       end
     end
   end
