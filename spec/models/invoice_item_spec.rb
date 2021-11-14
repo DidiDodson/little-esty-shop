@@ -4,6 +4,10 @@ RSpec.describe InvoiceItem, type: :model do
   describe 'relationships' do
     it { should belong_to(:item) }
     it { should belong_to(:invoice) }
+    it { should have_one(:merchant).through(:item) }
+    it { should have_many(:customers).through(:invoice) }
+    it { should have_many(:transactions).through(:invoice) }
+    it { should have_many(:bulk_discounts).through(:item) }
   end
 
   describe 'validations' do
@@ -60,6 +64,11 @@ RSpec.describe InvoiceItem, type: :model do
     it 'indentified an applied discount' do
       expect(@inv_item7.discount_applied).to eq(@discount1)
       expect(@inv_item8.discount_applied).to eq(nil)
+    end
+
+    it 'indentified an applied discount' do
+      expect(@inv_item7.inv_discount_applied).to eq(@discount1)
+      expect(@inv_item8.inv_discount_applied).to eq(nil)
     end
   end
 end
