@@ -21,6 +21,9 @@ RSpec.describe Merchant, type: :model do
       @merchant3 = create(:merchant)
       @merchant4 = create(:merchant)
 
+      @discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+      @discount2 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
+
       @customer1 = create :customer
       @customer2 = create :customer
       @customer3 = create :customer
