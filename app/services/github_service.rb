@@ -1,41 +1,44 @@
+require 'faraday'
+require 'json'
+
 class GithubService
-  class << self
 
-    TURING_STAFF = %w(BrianZanti timomitchel scottalexandra jamisonordway)
+  TURING_STAFF = %w(BrianZanti timomitchel scottalexandra jamisonordway)
 
-    def initialize
-    end
+  def self.repo_info
+    response = conn.get('/repos/jacobyarborough/little-esty-shop')
+    body = parse_response(response)
 
-    def name_info
-      repo_name_info[:name]
-    end
+    body[:name]
+  end
 
-    def contributors_commits
-      repo_contributors_commits.filter_map do |contributor|
-        if !TURING_STAFF.include?(contributor[:author][:login])
-          "#{contributor[:author][:login]} with #{contributor[:total]} commits."
-        end
+  def self.repo_contributors
+    response = conn.get('/repos/jacobyarborough/little-esty-shop/stats/contributors')
+    body = parse_response(response)
+
+    body.filter_map do |contributor|
+      if !TURING_STAFF.include?(contributor[:author][:login])
+        "#{contributor[:author][:login]} with #{contributor[:total]} commits."
       end
     end
+  end
 
-    def pr_count
-      repo_pr_count.count do |pull|
-        !TURING_STAFF.include?(pull[:user][:login])
-      end
+  def self.pr_info
+    response = conn.get('/repos/jacobyarborough/little-esty-shop/pulls?state=closed&per_page=100')
+    body = parse_response(response)
+
+    body.count do |pull|
+      !TURING_STAFF.include?(pull[:user][:login])
     end
+  end
 
     private
 
-    def repo_name_info
-      GithubClient.repo_info
-    end
+  def self.parse_response(response)
+    JSON.parse(response.body, symbolize_names: true)
+  end
 
-    def repo_contributors_commits
-      GithubClient.repo_contributors
-    end
-
-    def repo_pr_count
-      GithubClient.pr_info
-    end
+  def self.conn
+    Faraday.new("https://api.github.com")
   end
 end

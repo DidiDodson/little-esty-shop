@@ -1,13 +1,13 @@
 <ul class="nav">
   <li class="nav-item">
-    <a class="nav-link active" aria-current="page" href="https://github.com/jacobyarborough/little-esty-shop"><%= GithubService.name_info %></a>
+    <a class="nav-link active" aria-current="page" href="https://github.com/jacobyarborough/little-esty-shop"><%= GithubService.repo_info %></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link disabled">Contributors:<% GithubService.contributors_commits.each do |cont| %>
+    <a class="nav-link disabled">Contributors:<% GithubService.repo_contributors.each do |cont| %>
       <%= cont %>
     <% end %></a>
   </li>
   <li class="nav-item">
-    <a class="nav-link disabled">Pull Request Count: <%= GithubService.pr_count %></a>
+    <a class="nav-link disabled">Pull Request Count: <%= GithubService.pr_info %></a>
   </li>
 </ul>
