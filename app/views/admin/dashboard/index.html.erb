@@ -4,6 +4,8 @@
 
 <%= link_to "My Invoices", admin_invoices_path %>
 
+<%= link_to "View Bulk Discounts", admin_bulk_discounts_path %>
+
 <div id="top5">
   Favorite Customers<% @customers.admin_favorite_customers.each do |id, count| %>
   <div id="cust-<%= id %>">

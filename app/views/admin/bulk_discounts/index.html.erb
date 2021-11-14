@@ -1,0 +1,10 @@
+<h1>Admin Bulk Discounts</h1>
+
+<div id="bulk-discount">
+  <% @bulk_discounts.each do |discount| %>
+    <div id="bulk-discount-<%= discount.id %>">
+      Quantity Threshold: <%= discount.quantity_threshold %><br>
+      Percentage: <%= number_to_percentage(discount.percentage, precision: 0) %>
+    </div>
+  <% end %>
+</div>

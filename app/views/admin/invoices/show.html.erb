@@ -3,6 +3,9 @@ Invoice status: <%= @invoice.status %><br>
 Invoice created at: <%= @invoice.created_at.strftime('%A, %B %e, %Y') %><br>
 Invoice customer name: <%= @invoice.customer.full_name %><br>
 Invoice total revenue: <%= number_to_currency(@invoice.total_invoice_revenue(@invoice.id).fdiv(100)) %><br>
+Invoice total revenue after discounts:
+<%= number_to_currency((@invoice.total_invoice_revenue(@invoice.id).fdiv(100)) - (@invoice.total_inv_discounts(@invoice.id).fdiv(1000))) %><br>
+
 Inovice items:
 <hr>
 <% @invoice.items.each do |item| %>
@@ -12,10 +15,15 @@ Inovice items:
           Item name: <%= item.name %><br>
           Quantity: <%= inv_item.quantity %><br>
           Price: <%= number_to_currency(inv_item.unit_price.fdiv(100)) %><br>
+
           Status: <%= form_with model: [:admin, inv_item], local: true do |form| %>
             <%= form.select :status, [["pending"], ["packaged"], ["shipped"]], :selected => inv_item.status %>
             <%= form.submit "Update Invoice Status" %>
           <% end %><br>
+
+        <% if inv_item.inv_discount_applied.nil? == false %>
+          <%= link_to "View Discount", admin_bulk_discount_path("#{inv_item.inv_discount_applied.id}") %>
+        <% end %>
       <% end %>
     <% end %>
     <hr>
