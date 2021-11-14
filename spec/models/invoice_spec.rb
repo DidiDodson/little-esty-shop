@@ -18,7 +18,8 @@ RSpec.describe Invoice, type: :model do
       @merchant = create(:merchant)
       @merchant2 = create(:merchant)
 
-      discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+      @discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+      @discount12 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
 
       @customer1 = create :customer
       @customer2 = create :customer
@@ -63,7 +64,6 @@ RSpec.describe Invoice, type: :model do
       @inv_item10 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice7.id, unit_price: 100, quantity: 6 }
       @inv_item11 = create :invoice_item, { item_id: @item2.id, invoice_id: @invoice7.id, unit_price: 100, quantity: 10 }
       @inv_item12 = create :invoice_item, { item_id: @item3.id, invoice_id: @invoice7.id, unit_price: 100, quantity: 1 }
-
     end
 
     it 'returns invoices where status is in progress' do
@@ -84,8 +84,7 @@ RSpec.describe Invoice, type: :model do
       end
 
       it 'caluclates total discounts applied to an invoice' do
-
-        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq(24000)
+        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq(4000)
       end
     end
   end

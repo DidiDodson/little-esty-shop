@@ -8,6 +8,9 @@ RSpec.describe 'merchant invoice show page' do
     @item1 = create :item, { merchant_id: @merchant1.id }
     @item2 = create :item, { merchant_id: @merchant1.id }
     @item3 = create :item, { merchant_id: @merchant2.id }
+    @item4 = create :item, { merchant_id: @merchant1.id }
+
+    @discount1 = @merchant1.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
 
     @customer = create :customer
 
@@ -16,8 +19,9 @@ RSpec.describe 'merchant invoice show page' do
     @transaction = create :transaction, { invoice_id: @invoice.id, result: 'success' }
 
     @inv_item1 = create :invoice_item, { item_id: @item1.id, invoice_id: @invoice.id, status: 'pending' }
-    @inv_item2 = create :invoice_item, { item_id: @item2.id, invoice_id: @invoice.id}
-    @inv_item3 = create :invoice_item, { item_id: @item3.id, invoice_id: @invoice.id}
+    @inv_item2 = create :invoice_item, { item_id: @item2.id, invoice_id: @invoice.id }
+    @inv_item3 = create :invoice_item, { item_id: @item3.id, invoice_id: @invoice.id }
+    @inv_item4 = create :invoice_item, { item_id: @item4.id, invoice_id: @invoice.id, quantity: 6 }
 
     visit merchant_invoice_path(@merchant1, @invoice)
   end
@@ -60,5 +64,14 @@ RSpec.describe 'merchant invoice show page' do
 
   it 'I see total revenue after discounts for all of my items on invoice' do
     expect(page).to have_content("Total Merchant Revenue After Discounts for this Invoice")
+  end
+
+  it 'shows link to applied bulk discount page' do
+    within("#item-#{@item4.id}") do
+      expect(page).to have_link("View Discount")
+      click_link "View Discount"
+
+      expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @discount1))
+    end
   end
 end

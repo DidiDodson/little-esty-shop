@@ -12,7 +12,6 @@ class Customer < ApplicationRecord
     first_name + " " + last_name
   end
 
-
   def self.admin_favorite_customers
     self.joins(invoices: :transactions)
              .where('transactions.result = ?', 'success')
@@ -22,5 +21,4 @@ class Customer < ApplicationRecord
              .limit(5)
              .count
   end
-
 end

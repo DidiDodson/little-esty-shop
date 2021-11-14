@@ -42,11 +42,9 @@ class BulkDiscountsController < ApplicationController
     redirect_to merchant_bulk_discount_path(@merchant, @bulk_discount)
   end
 
-
   private
 
   def bulk_dis_params
     params.require(:bulk_discount).permit(:quantity_threshold, :percentage)
   end
-
 end

@@ -27,6 +27,8 @@ RSpec.describe InvoiceItem, type: :model do
 
       @item = create :item, { merchant_id: @merchant.id }
 
+      @discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+
       @invoice1 = create :invoice, { customer_id: @customer1.id, status: 'in progress' }
       @invoice2 = create :invoice, { customer_id: @customer2.id, status: 'in progress' }
       @invoice3 = create :invoice, { customer_id: @customer3.id, status: 'in progress' }
@@ -47,10 +49,17 @@ RSpec.describe InvoiceItem, type: :model do
       @inv_item4 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice4.id, status: "packaged"}
       @inv_item5 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice5.id, status: "packaged"}
       @inv_item6 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice6.id, status: "shipped"}
+      @inv_item7 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 6}
+      @inv_item8 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 4}
     end
 
     it 'returns incomplete invoices' do
-      expect(InvoiceItem.incomplete_inv).to eq([@inv_item1, @inv_item2, @inv_item3, @inv_item4, @inv_item5])
+      expect(InvoiceItem.incomplete_inv).to eq([@inv_item1, @inv_item2, @inv_item3, @inv_item4, @inv_item5, @inv_item7, @inv_item8])
+    end
+
+    it 'indentified an applied discount' do
+      expect(@inv_item7.discount_applied).to eq(@discount1)
+      expect(@inv_item8.discount_applied).to eq(nil)
     end
   end
 end
