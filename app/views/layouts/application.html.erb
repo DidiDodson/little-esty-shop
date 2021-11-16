@@ -7,11 +7,21 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+
   </head>
 
-<body>
+  <body>
+    <style>
+      h1 {padding-left: 15px;}
+      a {padding-left: 15px;}
 
-  <%= render 'shared/navbar' %>
+      div {
+        padding-left: 10px;
+      }
+    </style>
+
+    <%= render 'shared/navbar' %>
 
     <% flash.each do |type, msg| %>
       <div>
@@ -20,6 +30,5 @@
     <% end %>
 
     <%= yield %>
-
-    </body>
+  </body>
 </html>
