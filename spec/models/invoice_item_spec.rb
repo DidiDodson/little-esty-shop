@@ -32,6 +32,7 @@ RSpec.describe InvoiceItem, type: :model do
       @item = create :item, { merchant_id: @merchant.id }
 
       @discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+      @discount2 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
 
       @invoice1 = create :invoice, { customer_id: @customer1.id, status: 'in progress' }
       @invoice2 = create :invoice, { customer_id: @customer2.id, status: 'in progress' }
@@ -61,14 +62,56 @@ RSpec.describe InvoiceItem, type: :model do
       expect(InvoiceItem.incomplete_inv).to eq([@inv_item1, @inv_item2, @inv_item3, @inv_item4, @inv_item5, @inv_item7, @inv_item8])
     end
 
-    it 'indentified an applied discount' do
-      expect(@inv_item7.discount_applied).to eq(@discount1)
+    it 'identified an applied discount' do
+      expect(@inv_item7.discount_applied).to eq(@discount2)
       expect(@inv_item8.discount_applied).to eq(nil)
     end
 
     it 'indentified an applied discount' do
-      expect(@inv_item7.inv_discount_applied).to eq(@discount1)
+      expect(@inv_item7.inv_discount_applied).to eq(@discount2)
       expect(@inv_item8.inv_discount_applied).to eq(nil)
+    end
+
+    it 'applies discounts to a collection of invoice_items' do
+      merchant = create(:merchant)
+      customer1 = create :customer
+      item = create :item, { merchant_id: merchant.id }
+
+      discount1 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+      discount2 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
+      discount3 = merchant.bulk_discounts.create!(quantity_threshold: 7, percentage: 25)
+      discount4 = merchant.bulk_discounts.create!(quantity_threshold: 3, percentage: 15)
+
+      invoice1 = create :invoice, { customer_id: customer1.id, status: 'in progress' }
+
+      transaction1 = create :transaction, { invoice_id: invoice1.id, result: 'success' }
+
+      inv_item7 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 6}
+      inv_item8 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 4}
+
+      expect(inv_item7.items_disc.round).to eq((("#{inv_item7.quantity}").to_f * ("#{inv_item7.unit_price}").to_f * ("#{discount2.percentage}").to_f.fdiv(10000)).round)
+      expect(inv_item8.items_disc.round).to eq((("#{inv_item8.quantity}").to_f * ("#{inv_item8.unit_price}").to_f * ("#{discount4.percentage}").to_f.fdiv(10000)).round)
+    end
+
+    it 'applies disocunts to admin invoices' do
+      merchant = create(:merchant)
+      customer1 = create :customer
+      item = create :item, { merchant_id: merchant.id }
+
+      discount1 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
+      discount2 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
+      discount3 = merchant.bulk_discounts.create!(quantity_threshold: 7, percentage: 25)
+      discount4 = merchant.bulk_discounts.create!(quantity_threshold: 3, percentage: 15)
+
+      invoice1 = create :invoice, { customer_id: customer1.id, status: 'in progress' }
+
+      transaction1 = create :transaction, { invoice_id: invoice1.id, result: 'success' }
+
+      inv_item7 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 6}
+      inv_item8 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 4}
+
+      expect(inv_item7.admin_items_disc.round).to eq((("#{inv_item7.quantity}").to_f * ("#{inv_item7.unit_price}").to_f * ("#{discount2.percentage}").to_f.fdiv(10000)).round)
+      expect(inv_item8.admin_items_disc.round).to eq((("#{inv_item8.quantity}").to_f * ("#{inv_item8.unit_price}").to_f * ("#{discount4.percentage}").to_f.fdiv(10000)).round)
     end
   end
 end

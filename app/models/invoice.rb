@@ -30,19 +30,14 @@ class Invoice < ApplicationRecord
   end
 
   def total_discounts(invoice_id, merchant_id)
-    invoice_items.joins(item: {merchant: :bulk_discounts})
-                  .where(invoice_items: {invoice_id: invoice_id})
-                  .where(items: {merchant_id: merchant_id})
-                  .where('bulk_discounts.percentage = (:max)', max: bulk_discounts.select('max(percentage)'))
-                  .where('invoice_items.quantity >= bulk_discounts.quantity_threshold')
-                  .sum('invoice_items.unit_price * bulk_discounts.percentage')
+    invoice_items.sum do |inv_item|
+      inv_item.items_disc
+    end
   end
 
-  def total_inv_discounts(invoice_id)
-    invoice_items.joins(item: :bulk_discounts)
-                  .where(invoice_items: {invoice_id: invoice_id})
-                  .where('bulk_discounts.percentage = (:max)', max: bulk_discounts.select('max(percentage)'))
-                  .where('invoice_items.quantity >= bulk_discounts.quantity_threshold')
-                  .sum('invoice_items.unit_price * bulk_discounts.percentage')
+  def admin_total_discounts(invoice_id)
+    invoice_items.sum do |inv_item|
+      inv_item.items_disc
+    end
   end
 end

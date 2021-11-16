@@ -9,6 +9,7 @@ RSpec.describe 'merchant invoice show page' do
     @item2 = create :item, { merchant_id: @merchant1.id }
     @item3 = create :item, { merchant_id: @merchant2.id }
     @item4 = create :item, { merchant_id: @merchant1.id }
+    @item5 = create :item, { merchant_id: @merchant1.id }
 
     @discount1 = @merchant1.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
 
@@ -20,8 +21,9 @@ RSpec.describe 'merchant invoice show page' do
 
     @inv_item1 = create :invoice_item, { item_id: @item1.id, invoice_id: @invoice.id, status: 'pending' }
     @inv_item2 = create :invoice_item, { item_id: @item2.id, invoice_id: @invoice.id }
-    @inv_item3 = create :invoice_item, { item_id: @item3.id, invoice_id: @invoice.id }
+    @inv_item3 = create :invoice_item, { item_id: @item3.id, invoice_id: @invoice.id, quantity: 6 }
     @inv_item4 = create :invoice_item, { item_id: @item4.id, invoice_id: @invoice.id, quantity: 6 }
+    @inv_item5 = create :invoice_item, { item_id: @item5.id, invoice_id: @invoice.id, quantity: 4 }
 
     visit merchant_invoice_path(@merchant1, @invoice)
   end
@@ -73,5 +75,7 @@ RSpec.describe 'merchant invoice show page' do
 
       expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @discount1))
     end
+
+    expect(page).to_not have_content("#{@item3.id}")
   end
 end

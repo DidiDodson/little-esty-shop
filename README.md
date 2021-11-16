@@ -1,6 +1,6 @@
 # Little Esty Shop
 
-"Little Esty Shop" is a fictitious e-commerce management platform for admins and merchants to oversee inventory, and track and fulfill customer invoices. "Little Esty Shop" is deployed via Heroku at [Little Esty Shop](https://rocky-tundra-78096.herokuapp.com/).
+"Little Esty Shop" is a fictitious e-commerce management platform for admins and merchants to oversee inventory, and track and fulfill customer invoices. "Little Esty Shop" is deployed via Heroku at [Little Esty Shop](https://stark-castle-51480.herokuapp.com/).
 
 ### Features: Merchants
 #### Tools created to make it easy for your merchants to manage inventory and customers
@@ -45,4 +45,4 @@ with `rails s` to see the app in action.
 * Run `rake csv_load:all` to populate data from the Command Line to the rails server
 
 ## Contributors
-This app was developed via Ruby on Rails by students at Turing School of Software and Design in 2021.
+Parts of this app were developed via Ruby on Rails by Didi Dodson at Turing School of Software and Design in 2021. Other parts of this app were developed by Didi and other students at Turing.

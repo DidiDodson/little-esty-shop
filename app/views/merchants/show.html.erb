@@ -4,18 +4,18 @@
 
 <%= link_to "My Invoices", merchant_invoices_path(@merchant) %>
 
-<%= link_to "View Bulk Discounts", merchant_bulk_discounts_path(@merchant) %>
+<%= link_to "View Bulk Discounts", merchant_bulk_discounts_path(@merchant) %><hr>
 
 <div id="top5">
-  Favorite Customers<% @merchant.favorite_customers.each do |id, count| %>
+  Favorite Customers:<% @merchant.favorite_customers.each do |id, count| %>
   <div id="cust-<%= id %>">
     <%= @merchant.customers.find(id).full_name %> with <%= count %> successful transactions.
   </div>
   <% end %>
-</div>
+</div><hr>
 
 <div id="ready-to-ship">
-  Items Ready to Ship <% @merchant.items.each do |item| %>
+  Items Ready to Ship: <% @merchant.items.each do |item| %>
     <% item.invoices.in_progress.order_from_oldest.each do |invoice| %>
       <div id="invoice-<%= invoice.id %>">
         <%= item.name %> <%= link_to "(Invoice #{invoice.id})", merchant_invoice_path(@merchant, invoice) %>, created at <%= invoice.created_at.strftime('%A, %B %e, %Y') %>

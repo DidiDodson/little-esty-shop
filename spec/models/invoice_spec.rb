@@ -19,7 +19,7 @@ RSpec.describe Invoice, type: :model do
       @merchant2 = create(:merchant)
 
       @discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
-      @discount12 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
+      @discount2 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
 
       @customer1 = create :customer
       @customer2 = create :customer
@@ -39,7 +39,6 @@ RSpec.describe Invoice, type: :model do
       @invoice4 = create :invoice, { customer_id: @customer4.id, status: 'in progress' }
       @invoice5 = create :invoice, { customer_id: @customer5.id, status: 'cancelled' }
       @invoice6 = create :invoice, { customer_id: @customer6.id, status: 'completed' }
-
       @invoice7 = create :invoice, { customer_id: @customer6.id, status: 'in progress' }
 
       @transaction1 = create :transaction, { invoice_id: @invoice1.id, result: 'success' }
@@ -84,11 +83,11 @@ RSpec.describe Invoice, type: :model do
       end
 
       it 'caluclates total discounts applied to a merchant invoice' do
-        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq(4000)
+        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq((("#{@inv_item10.quantity}").to_f * ("#{@inv_item10.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)) + (("#{@inv_item11.quantity}").to_f * ("#{@inv_item11.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round(2))
       end
 
       it 'caluclates total discounts applied to an invoice' do
-        expect(@invoice7.total_inv_discounts(@invoice7.id)).to eq(4000)
+        expect(@invoice7.admin_total_discounts(@invoice7.id)).to eq((("#{@inv_item10.quantity}").to_f * ("#{@inv_item10.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)) + (("#{@inv_item11.quantity}").to_f * ("#{@inv_item11.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round(2))
       end
     end
   end
