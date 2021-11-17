@@ -31,4 +31,32 @@ class InvoiceItem < ApplicationRecord
       .limit(1)
       .first
   end
+
+  def items_disc
+    merch_discounts = merchant.bulk_discounts
+                              .where('quantity_threshold <= ?', quantity)
+                              .select('bulk_discounts.percentage as percentage')
+                              .order('percentage desc')
+                              # .first
+                              # .percentage
+                              # .to_f
+    discounts = merch_discounts.map do |merch_dis|
+      merch_dis.percentage
+    end
+
+    max_discount = discounts.max.to_f
+
+    ((max_discount * self.unit_price.to_f * self.quantity.to_f) / 10000)
+  end
+
+  def admin_items_disc
+    admin_discounts = bulk_discounts.where('quantity_threshold <= ?', quantity)
+                                    .select('bulk_discounts.percentage as percentage')
+                                    .order('percentage desc')
+                                    .first
+                                    .percentage
+                                    .to_f
+
+    ((admin_discounts * self.unit_price.to_f * self.quantity.to_f) / 10000)
+  end
 end

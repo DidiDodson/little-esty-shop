@@ -117,7 +117,6 @@ RSpec.describe Merchant, type: :model do
       end
     end
 
-    ###  TECHNICAL DEBT: this needs to be moved to item model test along with set-up. Or does it? Let's discuss.
     describe '#item_best_day' do
       it 'returns the date of the greatest number of sales for items' do
         expect(@merchant1.top_five_items.first.item_best_day).to eq(DateTime.new(2021, 1, 5))
@@ -175,7 +174,7 @@ RSpec.describe Merchant, type: :model do
     end
   end
 
-  describe 'instance methods' do
+  describe '#top_five_items' do
     before(:each) do
       @merchant = create(:merchant)
       @merchant1 = create(:merchant)
@@ -248,10 +247,8 @@ RSpec.describe Merchant, type: :model do
       @inv_item15 = create :invoice_item, { item_id: @item11.id, invoice_id: @invoice12.id, unit_price: 1200, quantity: 7}
     end
 
-    describe '#top_five_items' do
-      it 'returns the top five items by total revenue' do
+    it 'returns the top five items by total revenue' do
       expect(@merchant.top_five_items).to eq([@item1, @item2, @item3, @item4, @item5])
-      end
     end
   end
 end
