@@ -53,10 +53,16 @@ class InvoiceItem < ApplicationRecord
     admin_discounts = bulk_discounts.where('quantity_threshold <= ?', quantity)
                                     .select('bulk_discounts.percentage as percentage')
                                     .order('percentage desc')
-                                    .first
-                                    .percentage
-                                    .to_f
+                                    # .first
+                                    # .percentage
+                                    # .to_f
 
-    ((admin_discounts * self.unit_price.to_f * self.quantity.to_f) / 10000)
+    discounts = admin_discounts.map do |admin_dis|
+      admin_dis.percentage
+    end
+
+    max_discount = discounts.max.to_f
+
+    ((max_discount * self.unit_price.to_f * self.quantity.to_f) / 10000)
   end
 end
