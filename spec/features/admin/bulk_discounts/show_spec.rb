@@ -41,7 +41,7 @@ RSpec.describe "admin bulk discount show page" do
     visit admin_bulk_discount_path(@bulk_discount1)
   end
 
-  it 'specific details for one discount' do
+  it 'shows specific details for one discount' do
     expect(page).to have_content(@bulk_discount1.quantity_threshold)
     expect(page).to have_content(@bulk_discount1.percentage)
     expect(page).to_not have_content(@bulk_discount2.quantity_threshold)

@@ -54,64 +54,63 @@ RSpec.describe InvoiceItem, type: :model do
       @inv_item4 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice4.id, status: "packaged"}
       @inv_item5 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice5.id, status: "packaged"}
       @inv_item6 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice6.id, status: "shipped"}
-      @inv_item7 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 6}
-      @inv_item8 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 4}
+      @inv_item7 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 6 }
+      @inv_item8 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 4 }
     end
 
     it 'returns incomplete invoices' do
       expect(InvoiceItem.incomplete_inv).to eq([@inv_item1, @inv_item2, @inv_item3, @inv_item4, @inv_item5, @inv_item7, @inv_item8])
     end
 
-    it 'identified an applied discount' do
+    it 'identified an applied merchant inv discount' do
       expect(@inv_item7.discount_applied).to eq(@discount2)
       expect(@inv_item8.discount_applied).to eq(nil)
     end
 
-    it 'indentified an applied discount' do
+    it 'identified an applied admin inv discount' do
       expect(@inv_item7.inv_discount_applied).to eq(@discount2)
       expect(@inv_item8.inv_discount_applied).to eq(nil)
     end
+  end
 
-    it 'applies discounts to a collection of invoice_items' do
-      merchant = create(:merchant)
-      customer1 = create :customer
-      item = create :item, { merchant_id: merchant.id }
+  describe 'methods to apply discounts' do
+    before do
+      @merchant = create(:merchant)
+      @merchant2 = create(:merchant)
+      @customer1 = create :customer
+      @item = create :item, { merchant_id: @merchant.id }
 
-      discount1 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
-      discount2 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
-      discount3 = merchant.bulk_discounts.create!(quantity_threshold: 7, percentage: 25)
-      discount4 = merchant.bulk_discounts.create!(quantity_threshold: 3, percentage: 15)
+      @discount1 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 10)
+      @discount2 = @merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
+      @discount3 = @merchant.bulk_discounts.create!(quantity_threshold: 7, percentage: 25)
+      @discount4 = @merchant.bulk_discounts.create!(quantity_threshold: 3, percentage: 15)
+      @discount5 = @merchant2.bulk_discounts.create!(quantity_threshold: 3, percentage: 15)
 
-      invoice1 = create :invoice, { customer_id: customer1.id, status: 'in progress' }
+      @invoice1 = create :invoice, { customer_id: @customer1.id, status: 'in progress' }
 
-      transaction1 = create :transaction, { invoice_id: invoice1.id, result: 'success' }
+      @transaction1 = create :transaction, { invoice_id: @invoice1.id, result: 'success' }
 
-      inv_item7 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 6}
-      inv_item8 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 4}
+      @inv_item7 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 6}
+      @inv_item8 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 4}
+      @inv_item9 = create :invoice_item, { item_id: @item.id, invoice_id: @invoice1.id, status: "pending", quantity: 8}
+    end
 
-      expect(inv_item7.items_disc.round).to eq((("#{inv_item7.quantity}").to_f * ("#{inv_item7.unit_price}").to_f * ("#{discount2.percentage}").to_f.fdiv(10000)).round)
-      expect(inv_item8.items_disc.round).to eq((("#{inv_item8.quantity}").to_f * ("#{inv_item8.unit_price}").to_f * ("#{discount4.percentage}").to_f.fdiv(10000)).round)
+    it 'applies discounts to merchant invoices' do
+      inv_item_7_result = (("#{@inv_item7.quantity}").to_f * ("#{@inv_item7.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round
+
+      inv_item_8_result = (("#{@inv_item8.quantity}").to_f * ("#{@inv_item8.unit_price}").to_f * ("#{@discount4.percentage}").to_f.fdiv(10000)).round
+
+      expect(@inv_item7.items_disc.round).to eq(inv_item_7_result)
+      expect(@inv_item8.items_disc.round).to eq(inv_item_8_result)
     end
 
     it 'applies disocunts to admin invoices' do
-      merchant = create(:merchant)
-      customer1 = create :customer
-      item = create :item, { merchant_id: merchant.id }
+      inv_item_7_result = (("#{@inv_item7.quantity}").to_f * ("#{@inv_item7.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round
 
-      discount1 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 15)
-      discount2 = merchant.bulk_discounts.create!(quantity_threshold: 5, percentage: 20)
-      discount3 = merchant.bulk_discounts.create!(quantity_threshold: 7, percentage: 25)
-      discount4 = merchant.bulk_discounts.create!(quantity_threshold: 3, percentage: 15)
+      inv_item_8_result = (("#{@inv_item8.quantity}").to_f * ("#{@inv_item8.unit_price}").to_f * ("#{@discount4.percentage}").to_f.fdiv(10000)).round
 
-      invoice1 = create :invoice, { customer_id: customer1.id, status: 'in progress' }
-
-      transaction1 = create :transaction, { invoice_id: invoice1.id, result: 'success' }
-
-      inv_item7 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 6}
-      inv_item8 = create :invoice_item, { item_id: item.id, invoice_id: invoice1.id, status: "pending", quantity: 4}
-
-      expect(inv_item7.admin_items_disc.round).to eq((("#{inv_item7.quantity}").to_f * ("#{inv_item7.unit_price}").to_f * ("#{discount2.percentage}").to_f.fdiv(10000)).round)
-      expect(inv_item8.admin_items_disc.round).to eq((("#{inv_item8.quantity}").to_f * ("#{inv_item8.unit_price}").to_f * ("#{discount4.percentage}").to_f.fdiv(10000)).round)
+      expect(@inv_item7.admin_items_disc.round).to eq(inv_item_7_result)
+      expect(@inv_item8.admin_items_disc.round).to eq(inv_item_8_result)
     end
   end
 end

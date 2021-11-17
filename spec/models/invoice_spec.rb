@@ -83,11 +83,15 @@ RSpec.describe Invoice, type: :model do
       end
 
       it 'caluclates total discounts applied to a merchant invoice' do
-        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq((("#{@inv_item10.quantity}").to_f * ("#{@inv_item10.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)) + (("#{@inv_item11.quantity}").to_f * ("#{@inv_item11.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round(2))
+        inv_7_result = (("#{@inv_item10.quantity}").to_f * ("#{@inv_item10.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)) + (("#{@inv_item11.quantity}").to_f * ("#{@inv_item11.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round(2)
+
+        expect(@invoice7.total_discounts(@invoice7.id, @merchant.id)).to eq(inv_7_result)
       end
 
-      it 'caluclates total discounts applied to an invoice' do
-        expect(@invoice7.admin_total_discounts(@invoice7.id)).to eq((("#{@inv_item10.quantity}").to_f * ("#{@inv_item10.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)) + (("#{@inv_item11.quantity}").to_f * ("#{@inv_item11.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round(2))
+      it 'caluclates total discounts applied to an admin invoice' do
+        inv_7_result = (("#{@inv_item10.quantity}").to_f * ("#{@inv_item10.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)) + (("#{@inv_item11.quantity}").to_f * ("#{@inv_item11.unit_price}").to_f * ("#{@discount2.percentage}").to_f.fdiv(10000)).round(2)
+
+        expect(@invoice7.admin_total_discounts(@invoice7.id)).to eq(inv_7_result)
       end
     end
   end
